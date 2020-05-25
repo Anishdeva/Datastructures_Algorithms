@@ -1,0 +1,309 @@
+//Implementation of a heap
+#include<iostream>
+#include<vector>
+#include<fstream>
+#include<sstream>
+#include<string>
+#include<chrono>
+
+using namespace std;
+
+class Heap_max {
+private:
+	vector<int>list;
+public:
+	Heap_max() {
+		list = {};
+	}
+	void insert(int a) {
+		list.push_back(a);
+		heapify(a);
+	}
+
+	void heapify(int val) {//From bottom to top
+		int n = list.size();
+		int j = n;
+		if (n > 1) {
+			while (j > 1 && !check_parent(val, j)) {
+				j = bubble_up(val, j);
+			}
+		}
+	}
+
+	bool check_parent(int k, int pos) {	//parent should be greater than child
+		int parent = pos / 2;
+		if (list[parent - 1] < k) {
+			return 0;
+		}
+		return 1;
+	}
+
+	int bubble_up(int k, int pos) { //if child greater than parent
+		int parent = pos / 2;
+		list[pos - 1] = list[parent - 1];
+		list[parent - 1] = k;
+		return parent;
+	}
+
+	int extract_max() {
+		int max = list[0];
+		int n = list.size();
+		list[0] = list[n - 1];
+		//list[n - 1] = max;
+		list.pop_back();
+		int k = list[0];
+		int pos = 1;
+		if (n > 2) {
+			while ((2 * pos)+1 < n && !check_child(k, pos)) {
+				pos = bubble_down(k, pos);
+			}
+		}
+		return max;
+	}
+
+	bool check_child(int k, int pos) { //child should be less than parent
+		int n = list.size();
+		int pos1 = 2 * pos;
+		int pos2 = (2 * pos) + 1;
+		if (pos1 < n) {
+			int child1 = list[pos1 - 1];
+			if (child1 > k) {
+				return 0;
+			}
+		}
+		if (pos2 < n) {
+			int child2 = list[pos2 - 1];
+			if ( child2 > k) {
+				return 0;
+			}
+		}
+		return 1;
+	}
+
+	int bubble_down(int k, int pos) { //if parent is less than child
+		int pos1 = 2 * pos;
+		int pos2 = 2 * pos + 1;
+		int child1 = list[pos1 - 1];
+		int child2 = list[pos2 - 1];
+		if (child1 >= child2) {
+			list[pos - 1] = list[pos1 - 1];
+			list[pos1 - 1] = k;
+			return pos1;
+		}
+		else {
+			list[pos - 1] = list[pos2 - 1];
+			list[pos2 - 1] = k;
+			return pos2;
+		}
+	}
+
+	
+	
+
+	int read_max() {
+		return list[0];
+	}
+
+	void display() {
+		int n = list.size();
+		for (int i = 0; i < n; i++) {
+			cout << list[i] << " ";
+		}
+		cout << endl;
+	}
+};
+
+class Heap_min {
+private:
+	vector<int>list;
+public:
+	Heap_min() {
+		list = {};
+	}
+	void insert(int a) {
+		list.push_back(a);
+		heapify(a);
+	}
+
+	void heapify(int val) {//From bottom to top
+		int n = list.size();
+		int j = n;
+		if (n > 1) {
+			while (j > 1 && !check_parent(val, j)) {
+				j = bubble_up(val, j);
+			}
+		}
+	}
+
+	bool check_parent(int k, int pos) {	//parent should be less than child
+		int parent = pos / 2;
+		if (list[parent - 1] > k) {
+			return 0;
+		}
+		return 1;
+	}
+
+	int bubble_up(int k, int pos) { //if child greater than parent-switch
+		int parent = pos / 2;
+		list[pos - 1] = list[parent - 1];
+		list[parent - 1] = k;
+		return parent;
+	}
+
+	int extract_min() {
+		int min = list[0];
+		int n = list.size();
+		list[0] = list[n - 1];
+		//list[n - 1] = max;
+		list.pop_back();
+		int k = list[0];
+		int pos = 1;
+		if (n >= 2) {
+			while ((2 * pos) + 1 <= n && !check_child(k, pos)) {
+				pos = bubble_down(k, pos);
+			}
+		}
+		return min;
+	}
+
+	bool check_child(int k, int pos) { //child should be less than parent
+		int n = list.size();
+		int pos1 = 2 * pos;
+		int pos2 = (2 * pos) + 1;
+		if (pos1 < n) {
+			int child1 = list[pos1 - 1];
+			if (child1 < k) {
+				return 0;
+			}
+		}
+		if (pos2 < n) {
+			int child2 = list[pos2 - 1];
+			if (child2 < k) {
+				return 0;
+			}
+		}
+		return 1;
+	}
+
+	int bubble_down(int k, int pos) { //if parent is less than child
+		int pos1 = 2 * pos;
+		int pos2 = 2 * pos + 1;
+		int child1 = list[pos1 - 1];
+		int child2 = list[pos2 - 1];
+		if (child1 <= child2) {
+			list[pos - 1] = list[pos1 - 1];
+			list[pos1 - 1] = k;
+			return pos1;
+		}
+		else {
+			list[pos - 1] = list[pos2 - 1];
+			list[pos2 - 1] = k;
+			return pos2;
+		}
+	}
+
+
+
+
+	int read_min() {
+		return list[0];
+	}
+
+	void display() {
+		int n = list.size();
+		for (int i = 0; i < n; i++) {
+			cout << list[i] << " ";
+		}
+		cout << endl;
+	}
+};
+
+int main() {
+	auto start = std::chrono::high_resolution_clock::now();
+	Heap_min heap_high;
+	Heap_max heap_low;
+	//variables to keep track of
+	long i = 0;	//Iterator
+	int num = 0;//Input from file
+	int num_low, num_high, low_count = 0, high_count = 0;
+	long median = 0, median_sum = 0;
+	int temp;	//To collect nums being from one heap to another
+	ifstream ifs;
+	ifs.open("Median.txt", ifstream::in);
+	if (!ifs.is_open()) {
+		cout << "Unable to open file";
+		return -1;
+	}
+	string line;
+	while (getline(ifs, line)) {
+		i++;
+		istringstream str(line);
+		str >> num;
+		if (i == 1) {
+			num_low = num;
+			median_sum += num;
+		}
+		else if (i == 2) {
+			if (num > num_low) {
+				num_high = num;
+			}
+			else {
+				num_high = num_low;
+				num_low = num;
+			}
+			heap_high.insert(num_high);
+			heap_low.insert(num_low);
+			low_count++;
+			high_count++;
+		}
+		else {
+			if (num > num_low) {
+				heap_high.insert(num);
+				high_count++;
+			}
+			else if (num < num_high) {
+				heap_low.insert(num);
+				low_count++;
+			}
+		}
+
+		if (i >= 2) {
+			if (high_count > low_count + 1) {
+				num_high = heap_high.extract_min();
+				heap_low.insert(num_high);
+				num_high = heap_high.read_min();//updated 
+				num_low = heap_low.read_max();
+				high_count--;
+				low_count++;
+			}
+			else if (low_count > high_count + 1) {
+				num_low = heap_low.extract_max();
+				heap_high.insert(num_low);
+				num_high = heap_high.read_min();//updated 
+				num_low = heap_low.read_max();
+				high_count++;
+				low_count--;
+			}
+
+			num_high = heap_high.read_min();
+			num_low = heap_low.read_max();
+			if (i % 2 == 0) {
+				median = num_low;
+			}
+			else {	//odd number if inputs n, median is n/2
+
+				if (low_count >= (i / 2)+1) {
+					median = num_low;
+				}
+				else {
+					median = num_high;
+				}
+			}
+			median_sum += median;
+		}
+	}
+	auto stop = std::chrono::high_resolution_clock::now();
+	auto duration = std::chrono::duration_cast<std::chrono::microseconds> (stop - start);
+	cout << median_sum % 10000 << endl;
+	cout << duration.count() << endl;
+}
